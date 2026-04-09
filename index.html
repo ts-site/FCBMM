@@ -347,21 +347,6 @@
         font-size: 20px;
       }
     }
-.buttons{
-  display:flex;
-  gap:15px;
-  margin-top:20px;
-}
-.btn{
-  padding:14px 22px;
-  border-radius:14px;
-  background:linear-gradient(145deg,#ff2a2a,#b30000);
-  color:white;
-  text-decoration:none;
-  font-weight:800;
-  box-shadow:0 8px 0 #5a0000,0 15px 25px rgba(0,0,0,0.4);
-  transition:.15s;
-}
 .btn:hover{
   transform:translateY(-3px);
   box-shadow:0 12px 0 #5a0000,0 20px 30px rgba(0,0,0,0.5);
@@ -369,6 +354,45 @@
 .btn:active{
   transform:translateY(4px);
   box-shadow:0 3px 0 #5a0000;
+}
+.buttons{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  margin-top:22px;
+  max-width:420px;
+}
+.btn-row{
+  display:flex;
+  gap:12px;
+}
+.btn{
+  flex:1;
+  height:46px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:12px;
+  background:#ff2a2a;
+  color:#fff;
+  text-decoration:none;
+  font-weight:800;
+  font-size:15px;
+  box-shadow:0 4px 0 #7a0000;
+}
+.btn:active{
+  transform:translateY(3px);
+  box-shadow:0 1px 0 #7a0000;
+}
+.btn-telegram{
+  width:100%;
+  background:#2496f2;
+  box-shadow:0 4px 0 #0b5fa4;
+}
+@media (max-width:640px){
+  .buttons{
+    max-width:100%;
+  }
 }
 </style>
 </head>
@@ -382,8 +406,8 @@
           </div>
         </div>
         <div class="hero-copy">
-          <div class="eyebrow">Футбольный клуб • новая версия сайта</div>
-          <h1 class="title">ФК БММ <span>2026 SEASON</span></h1>
+          <div class="eyebrow"></div>
+          <h1 class="title">ФК БММ <span>2026 </span></h1>
           <div class="hero-stats">
             <div class="stat">
               <strong>14</strong>
@@ -402,8 +426,11 @@
               <span>сезон 2026</span>
             </div>
 <div class="buttons">
-  <a href="#" class="btn">Состав</a>
-  <a href="#" class="btn">Поле</a>
+  <div class="btn-row">
+    <a href="#sostav" class="btn">Состав</a>
+    <a href="#pole" class="btn">Поле</a>
+  </div>
+  <a href="https://t.me/arman2012011" class="btn btn-telegram" target="_blank">Телеграм</a>
 </div>
       </div>
         </div>
