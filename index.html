@@ -638,9 +638,10 @@ html{scroll-behavior:smooth;}
     <div class="footer">© 2026 ФК БММ — Все права защищены</div>
   </main>
 
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBTFmE6FIaaVxndwdW-Hcsq1UwsRIu6CPw",
@@ -654,47 +655,46 @@ const firebaseConfig = {
 const body = document.getElementById('matchesBody');
 
 function safe(v) {
-  return String(v ?? '').replace(/[&<>"']/g, (m) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  return String(v ?? '').replace(/[&<>"']/g, (m) => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[m]));
 }
 
 async function loadMatches() {
   try {
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    const snap = await getDocs(query(collection(db, 'matches'), orderBy('date', 'asc')));
+    const snap = await getDocs(collection(db, 'matches'));
 
     if (snap.empty) {
       body.innerHTML = '<tr><td colspan="7" class="empty-matches">Пока матчей нет.</td></tr>';
       return;
     }
 
-    body.innerHTML = snap.docs.map((doc) => {
-      const m = doc.data();
+    const docs = snap.docs.map((d) => d.data());
+    docs.sort((a, b) => String(a.date || '').localeCompare(String(b.date || '')));
+
+    body.innerHTML = docs.map((m) => {
       const status = m.status === 'finished' ? 'Сыгран' : 'Скоро';
-      const score = m.score || '—';
-      const time = m.time || '—';
-      const tournament = m.tournament || '—';
-      const place = m.place || '—';
       return `
         <tr>
           <td>${safe(m.date || '—')}</td>
-          <td>${safe(time)}</td>
+          <td>${safe(m.time || '—')}</td>
           <td>${safe(m.opponent || '—')}</td>
-          <td>${safe(tournament)}</td>
-          <td>${safe(place)}</td>
+          <td>${safe(m.tournament || '—')}</td>
+          <td>${safe(m.place || '—')}</td>
           <td><span class="match-pill ${m.status === 'finished' ? 'finished' : 'soon'}">${safe(status)}</span></td>
-          <td>${safe(score)}</td>
+          <td>${safe(m.score || '—')}</td>
         </tr>
       `;
     }).join('');
-  } catch (err) {
-    console.error(err);
-    body.innerHTML = '<tr><td colspan="7" class="empty-matches">Не удалось загрузить матчи. Проверь Rules Firestore или консоль браузера.</td></tr>';
+  } catch (e) {
+    console.error(e);
+    body.innerHTML = `<tr><td colspan="7" class="empty-matches">Ошибка загрузки: ${safe(e?.message || e)}</td></tr>`;
   }
 }
 
 loadMatches();
 </script>
-
 </body>
 </html>
