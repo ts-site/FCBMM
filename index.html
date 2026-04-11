@@ -396,6 +396,17 @@ html{scroll-behavior:smooth;}
     max-width:100%;
   }
 }
+
+    .matches-wrap { overflow-x:auto; }
+    .matches-table { width:100%; border-collapse: collapse; min-width: 760px; }
+    .matches-table th, .matches-table td { padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.10); text-align:left; }
+    .matches-table th { color:#ffb7b7; font-size:12px; text-transform:uppercase; letter-spacing:0.14em; }
+    .matches-table td { color: var(--text); }
+    .match-pill { display:inline-block; padding:7px 12px; border-radius:999px; border:1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.06); font-size:13px; font-weight:700; }
+    .match-pill.soon { background: rgba(255,255,255,0.08); }
+    .match-pill.finished { background: rgba(229,43,43,0.14); border-color: rgba(229,43,43,0.28); }
+    .empty-matches { color: var(--muted); padding: 8px 0; }
+
 </style>
 </head>
 <body>
@@ -596,7 +607,94 @@ html{scroll-behavior:smooth;}
         </div>
       </div>
     </section>
+
+    <section class="section" id="matches">
+      <div class="section-head">
+        <div>
+          <h2 class="section-title">Матчи</h2>
+          <p class="section-text">Здесь показываются ближайшие игры и результаты. Таблица загружается из Firebase, поэтому изменения с админ-страницы увидят все посетители сайта.</p>
+        </div>
+      </div>
+      <div class="matches-wrap">
+        <table class="matches-table">
+          <thead>
+            <tr>
+              <th>Дата</th>
+              <th>Время</th>
+              <th>Соперник</th>
+              <th>Турнир</th>
+              <th>Место</th>
+              <th>Статус</th>
+              <th>Счёт</th>
+            </tr>
+          </thead>
+          <tbody id="matchesBody">
+            <tr><td colspan="7" class="empty-matches">Загрузка матчей...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
     <div class="footer">© 2026 ФК БММ — Все права защищены</div>
   </main>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "PASTE_API_KEY",
+  authDomain: "PASTE_AUTH_DOMAIN",
+  projectId: "PASTE_PROJECT_ID",
+  storageBucket: "PASTE_STORAGE_BUCKET",
+  messagingSenderId: "PASTE_MESSAGING_SENDER_ID",
+  appId: "PASTE_APP_ID"
+};
+
+const body = document.getElementById('matchesBody');
+
+function safe(v) {
+  return String(v ?? '').replace(/[&<>"']/g, (m) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+async function loadMatches() {
+  try {
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const snap = await getDocs(query(collection(db, 'matches'), orderBy('date', 'asc')));
+
+    if (snap.empty) {
+      body.innerHTML = '<tr><td colspan="7" class="empty-matches">Пока матчей нет.</td></tr>';
+      return;
+    }
+
+    body.innerHTML = snap.docs.map((doc) => {
+      const m = doc.data();
+      const status = m.status === 'finished' ? 'Сыгран' : 'Скоро';
+      const score = m.score || '—';
+      const time = m.time || '—';
+      const tournament = m.tournament || '—';
+      const place = m.place || '—';
+      return `
+        <tr>
+          <td>${safe(m.date || '—')}</td>
+          <td>${safe(time)}</td>
+          <td>${safe(m.opponent || '—')}</td>
+          <td>${safe(tournament)}</td>
+          <td>${safe(place)}</td>
+          <td><span class="match-pill ${m.status === 'finished' ? 'finished' : 'soon'}">${safe(status)}</span></td>
+          <td>${safe(score)}</td>
+        </tr>
+      `;
+    }).join('');
+  } catch (err) {
+    console.error(err);
+    body.innerHTML = '<tr><td colspan="7" class="empty-matches">Не удалось загрузить матчи. Вставь свой firebaseConfig в код.</td></tr>';
+  }
+}
+
+loadMatches();
+</script>
+
 </body>
 </html>
