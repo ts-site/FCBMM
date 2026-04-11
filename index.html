@@ -640,7 +640,7 @@ html{scroll-behavior:smooth;}
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBTFmE6FIaaVxndwdW-Hcsq1UwsRIu6CPw",
@@ -689,7 +689,7 @@ async function loadMatches() {
     }).join('');
   } catch (err) {
     console.error(err);
-    body.innerHTML = '<tr><td colspan="7" class="empty-matches">Не удалось загрузить матчи. Вставь свой firebaseConfig в код.</td></tr>';
+    body.innerHTML = '<tr><td colspan="7" class="empty-matches">Не удалось загрузить матчи. Проверь Rules Firestore или консоль браузера.</td></tr>';
   }
 }
 
