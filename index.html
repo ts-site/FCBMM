@@ -397,15 +397,32 @@ html{scroll-behavior:smooth;}
   }
 }
 
-    .matches-wrap { overflow-x:auto; }
-    .matches-table { width:100%; border-collapse: collapse; min-width: 760px; }
-    .matches-table th, .matches-table td { padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.10); text-align:left; }
-    .matches-table th { color:#ffb7b7; font-size:12px; text-transform:uppercase; letter-spacing:0.14em; }
-    .matches-table td { color: var(--text); }
-    .match-pill { display:inline-block; padding:7px 12px; border-radius:999px; border:1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.06); font-size:13px; font-weight:700; }
-    .match-pill.soon { background: rgba(255,255,255,0.08); }
-    .match-pill.finished { background: rgba(229,43,43,0.14); border-color: rgba(229,43,43,0.28); }
-    .empty-matches { color: var(--muted); padding: 8px 0; }
+
+    .matches-table-wrap{overflow-x:auto;margin-top:10px}
+    .matches-table{width:100%;border-collapse:collapse;min-width:760px}
+    .matches-table th,.matches-table td{padding:14px 12px;border-bottom:1px solid rgba(255,255,255,0.10);text-align:left}
+    .matches-table th{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:#ffb7b7}
+    .matches-empty,.matches-error{color:var(--muted);padding:18px 0}
+    .matches-error{color:#ffb7b7}
+    .admin-toggle{display:inline-flex;align-items:center;justify-content:center;padding:12px 16px;border-radius:14px;background:rgba(255,255,255,0.09);border:1px solid rgba(255,255,255,0.12);color:#fff;font-weight:800;cursor:pointer}
+    .admin-panel{display:none;margin-top:18px;padding:22px;border-radius:24px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.10)}
+    .admin-panel.active{display:block}
+    .admin-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:16px}
+    .admin-grid .full{grid-column:1/-1}
+    .admin-label{display:block;font-size:13px;color:#ffb7b7;text-transform:uppercase;letter-spacing:.12em;margin-bottom:8px;font-weight:800}
+    .admin-input,.admin-select{width:100%;border-radius:14px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.06);color:#fff;padding:14px 14px;font-size:15px}
+    .admin-select option{color:#000}
+    .admin-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:14px}
+    .admin-btn{border:0;border-radius:14px;padding:14px 18px;background:var(--red);color:#fff;font-weight:800;cursor:pointer}
+    .admin-btn.secondary{background:rgba(255,255,255,0.10)}
+    .admin-msg{margin-top:12px;min-height:22px;color:#ffb7b7}
+    .admin-list{margin-top:24px}
+    .admin-list h3{font-size:clamp(26px,4vw,40px);line-height:1;text-transform:uppercase;font-weight:900;margin-bottom:16px}
+    .admin-actions{display:flex;gap:8px;flex-wrap:wrap}
+    .status-badge{display:inline-flex;padding:8px 12px;border-radius:999px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.10);font-weight:700;font-size:12px}
+    .admin-hint{color:var(--muted);font-size:14px;line-height:1.6;margin-top:10px}
+    .small-link{font-size:13px;color:#ffb7b7;text-decoration:underline;cursor:pointer;background:none;border:none;padding:0}
+    @media (max-width:780px){.admin-grid{grid-template-columns:1fr}.section-head.matches-head{align-items:flex-start}}
 
 </style>
 </head>
@@ -609,13 +626,15 @@ html{scroll-behavior:smooth;}
     </section>
 
     <section class="section" id="matches">
-      <div class="section-head">
+      <div class="section-head matches-head">
         <div>
           <h2 class="section-title">Матчи</h2>
-          <p class="section-text">Здесь показываются ближайшие игры и результаты. Таблица загружается из Firebase, поэтому изменения с админ-страницы увидят все посетители сайта.</p>
+          <p class="section-text">Здесь показываются ближайшие игры и результаты. Обновляется из Firebase, так что новые матчи появляются у всех посетителей сайта.</p>
         </div>
+        <button class="admin-toggle" id="adminToggle" type="button">Админ</button>
       </div>
-      <div class="matches-wrap">
+
+      <div class="matches-table-wrap">
         <table class="matches-table">
           <thead>
             <tr>
@@ -629,19 +648,97 @@ html{scroll-behavior:smooth;}
             </tr>
           </thead>
           <tbody id="matchesBody">
-            <tr><td colspan="7" class="empty-matches">Загрузка матчей...</td></tr>
+            <tr><td colspan="7" class="matches-empty">Загрузка матчей...</td></tr>
           </tbody>
         </table>
+      </div>
+      <div class="admin-msg" id="matchesMsg"></div>
+
+      <div class="admin-panel" id="adminPanel">
+        <div id="loginBox">
+          <label class="admin-label" for="adminPassword">Пароль администратора</label>
+          <input class="admin-input" id="adminPassword" type="password" placeholder="Введи пароль" />
+          <div class="admin-row">
+            <button class="admin-btn" id="loginBtn" type="button">Войти</button>
+            <button class="admin-btn secondary" id="closeAdminBtn" type="button">Закрыть</button>
+          </div>
+          <div class="admin-msg" id="loginMsg"></div>
+        </div>
+
+        <div id="adminContent" style="display:none;">
+          <p class="admin-hint">Добавляй, редактируй и удаляй матчи прямо на главной. После сохранения список выше обновится автоматически.</p>
+          <div class="admin-grid">
+            <div>
+              <label class="admin-label" for="opponent">Соперник</label>
+              <input class="admin-input" id="opponent" type="text" placeholder="Например, Спартак" />
+            </div>
+            <div>
+              <label class="admin-label" for="date">Дата</label>
+              <input class="admin-input" id="date" type="date" />
+            </div>
+            <div>
+              <label class="admin-label" for="time">Время</label>
+              <input class="admin-input" id="time" type="text" placeholder="19:30" />
+            </div>
+            <div>
+              <label class="admin-label" for="tournament">Турнир</label>
+              <input class="admin-input" id="tournament" type="text" placeholder="Лига / Кубок" />
+            </div>
+            <div>
+              <label class="admin-label" for="place">Место</label>
+              <input class="admin-input" id="place" type="text" placeholder="Дома / В гостях / Стадион" />
+            </div>
+            <div>
+              <label class="admin-label" for="status">Статус</label>
+              <select class="admin-select" id="status">
+                <option value="soon">Скоро</option>
+                <option value="finished">Сыгран</option>
+              </select>
+            </div>
+            <div class="full">
+              <label class="admin-label" for="score">Счёт</label>
+              <input class="admin-input" id="score" type="text" placeholder="Например, 2:1" />
+            </div>
+          </div>
+          <div class="admin-row">
+            <button class="admin-btn" id="saveBtn" type="button">Сохранить матч</button>
+            <button class="admin-btn secondary" id="resetBtn" type="button">Очистить</button>
+            <button class="admin-btn secondary" id="logoutBtn" type="button">Выйти</button>
+          </div>
+          <div class="admin-msg" id="adminMsg"></div>
+
+          <div class="admin-list">
+            <h3>Список матчей</h3>
+            <div class="matches-table-wrap">
+              <table class="matches-table">
+                <thead>
+                  <tr>
+                    <th>Дата</th>
+                    <th>Время</th>
+                    <th>Соперник</th>
+                    <th>Турнир</th>
+                    <th>Место</th>
+                    <th>Статус</th>
+                    <th>Счёт</th>
+                    <th>Действия</th>
+                  </tr>
+                </thead>
+                <tbody id="adminMatchesBody">
+                  <tr><td colspan="8" class="matches-empty">Загрузка матчей...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
     <div class="footer">© 2026 ФК БММ — Все права защищены</div>
   </main>
 
-
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBTFmE6FIaaVxndwdW-Hcsq1UwsRIu6CPw",
@@ -652,49 +749,254 @@ const firebaseConfig = {
   appId: "1:22315617190:web:3a670f18bbf115c9bb9d67"
 };
 
-const body = document.getElementById('matchesBody');
+const ADMIN_PASSWORD = "BMM2026";
+const ADMIN_SESSION_KEY = "fcbmm_admin_open";
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-function safe(v) {
-  return String(v ?? '').replace(/[&<>"']/g, (m) => ({
-    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
-  }[m]));
+const matchesBody = document.getElementById('matchesBody');
+const adminMatchesBody = document.getElementById('adminMatchesBody');
+const matchesMsg = document.getElementById('matchesMsg');
+const adminMsg = document.getElementById('adminMsg');
+const loginMsg = document.getElementById('loginMsg');
+const adminPanel = document.getElementById('adminPanel');
+const adminContent = document.getElementById('adminContent');
+const loginBox = document.getElementById('loginBox');
+
+const formEls = {
+  opponent: document.getElementById('opponent'),
+  date: document.getElementById('date'),
+  time: document.getElementById('time'),
+  tournament: document.getElementById('tournament'),
+  place: document.getElementById('place'),
+  status: document.getElementById('status'),
+  score: document.getElementById('score')
+};
+
+let matchesCache = [];
+let editingId = null;
+
+function escapeHtml(value = '') {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return '—';
+  const parts = dateStr.split('-');
+  if (parts.length !== 3) return dateStr;
+  return `${parts[2]}.${parts[1]}.${parts[0]}`;
+}
+
+function statusLabel(status) {
+  return status === 'finished' ? 'Сыгран' : 'Скоро';
+}
+
+function sortMatches(list) {
+  return [...list].sort((a, b) => {
+    const aDate = `${a.date || ''} ${a.time || ''}`.trim();
+    const bDate = `${b.date || ''} ${b.time || ''}`.trim();
+    return aDate.localeCompare(bDate);
+  });
+}
+
+function renderMainMatches(list) {
+  if (!list.length) {
+    matchesBody.innerHTML = '<tr><td colspan="7" class="matches-empty">Пока матчей нет.</td></tr>';
+    return;
+  }
+  matchesBody.innerHTML = list.map((m) => `
+    <tr>
+      <td>${escapeHtml(formatDate(m.date))}</td>
+      <td>${escapeHtml(m.time || '—')}</td>
+      <td>${escapeHtml(m.opponent || '—')}</td>
+      <td>${escapeHtml(m.tournament || '—')}</td>
+      <td>${escapeHtml(m.place || '—')}</td>
+      <td><span class="status-badge">${escapeHtml(statusLabel(m.status))}</span></td>
+      <td>${escapeHtml(m.score || (m.status === 'finished' ? '—' : 'ещё нет'))}</td>
+    </tr>
+  `).join('');
+}
+
+function renderAdminMatches(list) {
+  if (!list.length) {
+    adminMatchesBody.innerHTML = '<tr><td colspan="8" class="matches-empty">Пока матчей нет.</td></tr>';
+    return;
+  }
+  adminMatchesBody.innerHTML = list.map((m) => `
+    <tr>
+      <td>${escapeHtml(formatDate(m.date))}</td>
+      <td>${escapeHtml(m.time || '—')}</td>
+      <td>${escapeHtml(m.opponent || '—')}</td>
+      <td>${escapeHtml(m.tournament || '—')}</td>
+      <td>${escapeHtml(m.place || '—')}</td>
+      <td>${escapeHtml(statusLabel(m.status))}</td>
+      <td>${escapeHtml(m.score || '—')}</td>
+      <td>
+        <div class="admin-actions">
+          <button class="small-link" type="button" data-edit="${m.id}">Изменить</button>
+          <button class="small-link" type="button" data-delete="${m.id}">Удалить</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
 }
 
 async function loadMatches() {
+  matchesMsg.textContent = '';
   try {
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
     const snap = await getDocs(collection(db, 'matches'));
-
-    if (snap.empty) {
-      body.innerHTML = '<tr><td colspan="7" class="empty-matches">Пока матчей нет.</td></tr>';
-      return;
-    }
-
-    const docs = snap.docs.map((d) => d.data());
-    docs.sort((a, b) => String(a.date || '').localeCompare(String(b.date || '')));
-
-    body.innerHTML = docs.map((m) => {
-      const status = m.status === 'finished' ? 'Сыгран' : 'Скоро';
-      return `
-        <tr>
-          <td>${safe(m.date || '—')}</td>
-          <td>${safe(m.time || '—')}</td>
-          <td>${safe(m.opponent || '—')}</td>
-          <td>${safe(m.tournament || '—')}</td>
-          <td>${safe(m.place || '—')}</td>
-          <td><span class="match-pill ${m.status === 'finished' ? 'finished' : 'soon'}">${safe(status)}</span></td>
-          <td>${safe(m.score || '—')}</td>
-        </tr>
-      `;
-    }).join('');
-  } catch (e) {
-    console.error(e);
-    body.innerHTML = `<tr><td colspan="7" class="empty-matches">Ошибка загрузки: ${safe(e?.message || e)}</td></tr>`;
+    matchesCache = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const sorted = sortMatches(matchesCache);
+    renderMainMatches(sorted);
+    renderAdminMatches(sorted);
+  } catch (error) {
+    console.error(error);
+    matchesBody.innerHTML = '<tr><td colspan="7" class="matches-error">Не удалось загрузить матчи. Проверь Firestore Rules.</td></tr>';
+    adminMatchesBody.innerHTML = '<tr><td colspan="8" class="matches-error">Не удалось загрузить матчи.</td></tr>';
+    matchesMsg.textContent = `Ошибка загрузки: ${error.message}`;
   }
+}
+
+function resetForm() {
+  Object.values(formEls).forEach((el) => {
+    if (el.tagName === 'SELECT') {
+      el.value = 'soon';
+    } else {
+      el.value = '';
+    }
+  });
+  editingId = null;
+  adminMsg.textContent = '';
+  document.getElementById('saveBtn').textContent = 'Сохранить матч';
+}
+
+function fillForm(match) {
+  formEls.opponent.value = match.opponent || '';
+  formEls.date.value = match.date || '';
+  formEls.time.value = match.time || '';
+  formEls.tournament.value = match.tournament || '';
+  formEls.place.value = match.place || '';
+  formEls.status.value = match.status || 'soon';
+  formEls.score.value = match.score || '';
+  editingId = match.id;
+  adminMsg.textContent = 'Режим редактирования матча.';
+  document.getElementById('saveBtn').textContent = 'Сохранить изменения';
+  adminPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function setAdminState(open) {
+  if (open) {
+    adminPanel.classList.add('active');
+    loginBox.style.display = 'none';
+    adminContent.style.display = 'block';
+    sessionStorage.setItem(ADMIN_SESSION_KEY, '1');
+  } else {
+    adminPanel.classList.remove('active');
+    loginBox.style.display = 'block';
+    adminContent.style.display = 'none';
+    document.getElementById('adminPassword').value = '';
+    loginMsg.textContent = '';
+    sessionStorage.removeItem(ADMIN_SESSION_KEY);
+    resetForm();
+  }
+}
+
+document.getElementById('adminToggle').addEventListener('click', () => {
+  adminPanel.classList.add('active');
+  if (sessionStorage.getItem(ADMIN_SESSION_KEY) === '1') {
+    setAdminState(true);
+  } else {
+    loginBox.style.display = 'block';
+    adminContent.style.display = 'none';
+  }
+});
+
+document.getElementById('closeAdminBtn').addEventListener('click', () => {
+  adminPanel.classList.remove('active');
+});
+
+document.getElementById('loginBtn').addEventListener('click', () => {
+  const pwd = document.getElementById('adminPassword').value.trim();
+  if (pwd !== ADMIN_PASSWORD) {
+    loginMsg.textContent = 'Неверный пароль.';
+    return;
+  }
+  setAdminState(true);
+});
+
+document.getElementById('logoutBtn').addEventListener('click', () => {
+  setAdminState(false);
+});
+
+document.getElementById('resetBtn').addEventListener('click', resetForm);
+
+document.getElementById('saveBtn').addEventListener('click', async () => {
+  adminMsg.textContent = '';
+  const payload = {
+    opponent: formEls.opponent.value.trim(),
+    date: formEls.date.value.trim(),
+    time: formEls.time.value.trim(),
+    tournament: formEls.tournament.value.trim(),
+    place: formEls.place.value.trim(),
+    status: formEls.status.value,
+    score: formEls.score.value.trim()
+  };
+
+  if (!payload.opponent || !payload.date) {
+    adminMsg.textContent = 'Заполни минимум соперника и дату.';
+    return;
+  }
+
+  try {
+    if (editingId) {
+      await updateDoc(doc(db, 'matches', editingId), payload);
+      adminMsg.textContent = 'Матч обновлён.';
+    } else {
+      await addDoc(collection(db, 'matches'), payload);
+      adminMsg.textContent = 'Матч сохранён.';
+    }
+    resetForm();
+    await loadMatches();
+  } catch (error) {
+    console.error(error);
+    adminMsg.textContent = `Ошибка сохранения: ${error.message}`;
+  }
+});
+
+adminMatchesBody.addEventListener('click', async (event) => {
+  const editId = event.target.getAttribute('data-edit');
+  const deleteId = event.target.getAttribute('data-delete');
+  if (editId) {
+    const match = matchesCache.find(m => m.id === editId);
+    if (match) fillForm(match);
+    return;
+  }
+  if (deleteId) {
+    if (!confirm('Удалить матч?')) return;
+    try {
+      await deleteDoc(doc(db, 'matches', deleteId));
+      adminMsg.textContent = 'Матч удалён.';
+      if (editingId === deleteId) resetForm();
+      await loadMatches();
+    } catch (error) {
+      console.error(error);
+      adminMsg.textContent = `Ошибка удаления: ${error.message}`;
+    }
+  }
+});
+
+if (sessionStorage.getItem(ADMIN_SESSION_KEY) === '1') {
+  adminPanel.classList.add('active');
+  setAdminState(true);
 }
 
 loadMatches();
 </script>
+
 </body>
 </html>
