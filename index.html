@@ -416,8 +416,6 @@ html{scroll-behavior:smooth;}
     .admin-btn{border:0;border-radius:14px;padding:14px 18px;background:var(--red);color:#fff;font-weight:800;cursor:pointer}
     .admin-btn.secondary{background:rgba(255,255,255,0.10)}
     .admin-msg{margin-top:12px;min-height:22px;color:#ffb7b7}
-    .admin-list{margin-top:24px}
-    .admin-list h3{font-size:clamp(26px,4vw,40px);line-height:1;text-transform:uppercase;font-weight:900;margin-bottom:16px}
     .admin-actions{display:flex;gap:8px;flex-wrap:wrap}
     .status-badge{display:inline-flex;padding:8px 12px;border-radius:999px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.10);font-weight:700;font-size:12px}
     .admin-hint{color:var(--muted);font-size:14px;line-height:1.6;margin-top:10px}
@@ -666,7 +664,7 @@ html{scroll-behavior:smooth;}
         </div>
 
         <div id="adminContent" style="display:none;">
-          <p class="admin-hint">Добавляй, редактируй и удаляй матчи прямо на главной. После сохранения список выше обновится автоматически.</p>
+          <p class="admin-hint">Добавляй, редактируй и удаляй матчи прямо здесь. После сохранения обновится только основная таблица выше, а данные останутся после перезагрузки страницы на этом устройстве.</p>
           <div class="admin-grid">
             <div>
               <label class="admin-label" for="opponent">Соперник</label>
@@ -707,61 +705,26 @@ html{scroll-behavior:smooth;}
           </div>
           <div class="admin-msg" id="adminMsg"></div>
 
-          <div class="admin-list">
-            <h3>Список матчей</h3>
-            <div class="matches-table-wrap">
-              <table class="matches-table">
-                <thead>
-                  <tr>
-                    <th>Дата</th>
-                    <th>Время</th>
-                    <th>Соперник</th>
-                    <th>Турнир</th>
-                    <th>Место</th>
-                    <th>Статус</th>
-                    <th>Счёт</th>
-                    <th>Действия</th>
-                  </tr>
-                </thead>
-                <tbody id="adminMatchesBody">
-                  <tr><td colspan="8" class="matches-empty">Загрузка матчей...</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
         </div>
       </div>
-    </section>
+    </section>>
 
     <div class="footer">© 2026 ФК БММ — Все права защищены</div>
   </main>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyBTFmE6FIaaVxndwdW-Hcsq1UwsRIu6CPw",
-  authDomain: "fcbmm-416e6.firebaseapp.com",
-  projectId: "fcbmm-416e6",
-  storageBucket: "fcbmm-416e6.firebasestorage.app",
-  messagingSenderId: "22315617190",
-  appId: "1:22315617190:web:3a670f18bbf115c9bb9d67"
-};
-
+<script>
 const ADMIN_PASSWORD = "BMM2026";
 const ADMIN_SESSION_KEY = "fcbmm_admin_open";
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const MATCHES_STORAGE_KEY = "fcbmm_matches_storage_v2";
 
 const matchesBody = document.getElementById('matchesBody');
-const adminMatchesBody = document.getElementById('adminMatchesBody');
 const matchesMsg = document.getElementById('matchesMsg');
 const adminMsg = document.getElementById('adminMsg');
 const loginMsg = document.getElementById('loginMsg');
 const adminPanel = document.getElementById('adminPanel');
 const adminContent = document.getElementById('adminContent');
 const loginBox = document.getElementById('loginBox');
+const saveBtn = document.getElementById('saveBtn');
 
 const formEls = {
   opponent: document.getElementById('opponent'),
@@ -804,6 +767,26 @@ function sortMatches(list) {
   });
 }
 
+function saveMatchesToStorage() {
+  localStorage.setItem(MATCHES_STORAGE_KEY, JSON.stringify(matchesCache));
+}
+
+function loadMatchesFromStorage() {
+  try {
+    const raw = localStorage.getItem(MATCHES_STORAGE_KEY);
+    if (!raw) {
+      matchesCache = [];
+      return;
+    }
+    const parsed = JSON.parse(raw);
+    matchesCache = Array.isArray(parsed) ? parsed : [];
+  } catch (error) {
+    console.error(error);
+    matchesCache = [];
+    matchesMsg.textContent = 'Не удалось прочитать сохранённые матчи.';
+  }
+}
+
 function renderMainMatches(list) {
   if (!list.length) {
     matchesBody.innerHTML = '<tr><td colspan="7" class="matches-empty">Пока матчей нет.</td></tr>';
@@ -822,44 +805,8 @@ function renderMainMatches(list) {
   `).join('');
 }
 
-function renderAdminMatches(list) {
-  if (!list.length) {
-    adminMatchesBody.innerHTML = '<tr><td colspan="8" class="matches-empty">Пока матчей нет.</td></tr>';
-    return;
-  }
-  adminMatchesBody.innerHTML = list.map((m) => `
-    <tr>
-      <td>${escapeHtml(formatDate(m.date))}</td>
-      <td>${escapeHtml(m.time || '—')}</td>
-      <td>${escapeHtml(m.opponent || '—')}</td>
-      <td>${escapeHtml(m.tournament || '—')}</td>
-      <td>${escapeHtml(m.place || '—')}</td>
-      <td>${escapeHtml(statusLabel(m.status))}</td>
-      <td>${escapeHtml(m.score || '—')}</td>
-      <td>
-        <div class="admin-actions">
-          <button class="small-link" type="button" data-edit="${m.id}">Изменить</button>
-          <button class="small-link" type="button" data-delete="${m.id}">Удалить</button>
-        </div>
-      </td>
-    </tr>
-  `).join('');
-}
-
-async function loadMatches() {
-  matchesMsg.textContent = '';
-  try {
-    const snap = await getDocs(collection(db, 'matches'));
-    matchesCache = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    const sorted = sortMatches(matchesCache);
-    renderMainMatches(sorted);
-    renderAdminMatches(sorted);
-  } catch (error) {
-    console.error(error);
-    matchesBody.innerHTML = '<tr><td colspan="7" class="matches-error">Не удалось загрузить матчи. Проверь Firestore Rules.</td></tr>';
-    adminMatchesBody.innerHTML = '<tr><td colspan="8" class="matches-error">Не удалось загрузить матчи.</td></tr>';
-    matchesMsg.textContent = `Ошибка загрузки: ${error.message}`;
-  }
+function refreshMainTable() {
+  renderMainMatches(sortMatches(matchesCache));
 }
 
 function resetForm() {
@@ -872,7 +819,7 @@ function resetForm() {
   });
   editingId = null;
   adminMsg.textContent = '';
-  document.getElementById('saveBtn').textContent = 'Сохранить матч';
+  saveBtn.textContent = 'Сохранить матч';
 }
 
 function fillForm(match) {
@@ -885,7 +832,7 @@ function fillForm(match) {
   formEls.score.value = match.score || '';
   editingId = match.id;
   adminMsg.textContent = 'Режим редактирования матча.';
-  document.getElementById('saveBtn').textContent = 'Сохранить изменения';
+  saveBtn.textContent = 'Сохранить изменения';
   adminPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
@@ -904,6 +851,50 @@ function setAdminState(open) {
     sessionStorage.removeItem(ADMIN_SESSION_KEY);
     resetForm();
   }
+}
+
+function handleMainTableActions(event) {
+  const editId = event.target.getAttribute('data-edit');
+  const deleteId = event.target.getAttribute('data-delete');
+  if (editId) {
+    const match = matchesCache.find((m) => m.id === editId);
+    if (match) {
+      fillForm(match);
+      adminPanel.classList.add('active');
+      setAdminState(true);
+    }
+    return;
+  }
+  if (deleteId) {
+    if (!confirm('Удалить матч?')) return;
+    matchesCache = matchesCache.filter((m) => m.id !== deleteId);
+    saveMatchesToStorage();
+    refreshMainTable();
+    adminMsg.textContent = 'Матч удалён.';
+    if (editingId === deleteId) resetForm();
+  }
+}
+
+function renderMainMatches(list) {
+  if (!list.length) {
+    matchesBody.innerHTML = '<tr><td colspan="7" class="matches-empty">Пока матчей нет.</td></tr>';
+    return;
+  }
+  const isAdminOpen = sessionStorage.getItem(ADMIN_SESSION_KEY) === '1';
+  matchesBody.innerHTML = list.map((m) => `
+    <tr>
+      <td>${escapeHtml(formatDate(m.date))}</td>
+      <td>${escapeHtml(m.time || '—')}</td>
+      <td>${escapeHtml(m.opponent || '—')}</td>
+      <td>${escapeHtml(m.tournament || '—')}</td>
+      <td>${escapeHtml(m.place || '—')}</td>
+      <td><span class="status-badge">${escapeHtml(statusLabel(m.status))}</span></td>
+      <td>
+        ${escapeHtml(m.score || (m.status === 'finished' ? '—' : 'ещё нет'))}
+        ${isAdminOpen ? `<div class="admin-actions" style="margin-top:10px;"><button class="small-link" type="button" data-edit="${escapeHtml(m.id)}">Изменить</button><button class="small-link" type="button" data-delete="${escapeHtml(m.id)}">Удалить</button></div>` : ''}
+      </td>
+    </tr>
+  `).join('');
 }
 
 document.getElementById('adminToggle').addEventListener('click', () => {
@@ -927,15 +918,17 @@ document.getElementById('loginBtn').addEventListener('click', () => {
     return;
   }
   setAdminState(true);
+  refreshMainTable();
 });
 
 document.getElementById('logoutBtn').addEventListener('click', () => {
   setAdminState(false);
+  refreshMainTable();
 });
 
 document.getElementById('resetBtn').addEventListener('click', resetForm);
 
-document.getElementById('saveBtn').addEventListener('click', async () => {
+document.getElementById('saveBtn').addEventListener('click', () => {
   adminMsg.textContent = '';
   const payload = {
     opponent: formEls.opponent.value.trim(),
@@ -952,50 +945,28 @@ document.getElementById('saveBtn').addEventListener('click', async () => {
     return;
   }
 
-  try {
-    if (editingId) {
-      await updateDoc(doc(db, 'matches', editingId), payload);
-      adminMsg.textContent = 'Матч обновлён.';
-    } else {
-      await addDoc(collection(db, 'matches'), payload);
-      adminMsg.textContent = 'Матч сохранён.';
-    }
-    resetForm();
-    await loadMatches();
-  } catch (error) {
-    console.error(error);
-    adminMsg.textContent = `Ошибка сохранения: ${error.message}`;
+  if (editingId) {
+    matchesCache = matchesCache.map((m) => m.id === editingId ? { ...m, ...payload } : m);
+    adminMsg.textContent = 'Матч обновлён.';
+  } else {
+    matchesCache.push({ id: `match_${Date.now()}`, ...payload });
+    adminMsg.textContent = 'Матч сохранён.';
   }
+
+  saveMatchesToStorage();
+  resetForm();
+  refreshMainTable();
 });
 
-adminMatchesBody.addEventListener('click', async (event) => {
-  const editId = event.target.getAttribute('data-edit');
-  const deleteId = event.target.getAttribute('data-delete');
-  if (editId) {
-    const match = matchesCache.find(m => m.id === editId);
-    if (match) fillForm(match);
-    return;
-  }
-  if (deleteId) {
-    if (!confirm('Удалить матч?')) return;
-    try {
-      await deleteDoc(doc(db, 'matches', deleteId));
-      adminMsg.textContent = 'Матч удалён.';
-      if (editingId === deleteId) resetForm();
-      await loadMatches();
-    } catch (error) {
-      console.error(error);
-      adminMsg.textContent = `Ошибка удаления: ${error.message}`;
-    }
-  }
-});
+matchesBody.addEventListener('click', handleMainTableActions);
 
 if (sessionStorage.getItem(ADMIN_SESSION_KEY) === '1') {
   adminPanel.classList.add('active');
   setAdminState(true);
 }
 
-loadMatches();
+loadMatchesFromStorage();
+refreshMainTable();
 </script>
 
 </body>
