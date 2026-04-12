@@ -397,30 +397,37 @@ html{scroll-behavior:smooth;}
   }
 }
 
-
-    .matches-table-wrap{overflow-x:auto;margin-top:10px}
-    .matches-table{width:100%;border-collapse:collapse;min-width:760px}
-    .matches-table th,.matches-table td{padding:14px 12px;border-bottom:1px solid rgba(255,255,255,0.10);text-align:left}
-    .matches-table th{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:#ffb7b7}
-    .matches-empty,.matches-error{color:var(--muted);padding:18px 0}
-    .matches-error{color:#ffb7b7}
-    .admin-toggle{display:inline-flex;align-items:center;justify-content:center;padding:12px 16px;border-radius:14px;background:rgba(255,255,255,0.09);border:1px solid rgba(255,255,255,0.12);color:#fff;font-weight:800;cursor:pointer}
-    .admin-panel{display:none;margin-top:18px;padding:22px;border-radius:24px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.10)}
-    .admin-panel.active{display:block}
-    .admin-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:16px}
-    .admin-grid .full{grid-column:1/-1}
-    .admin-label{display:block;font-size:13px;color:#ffb7b7;text-transform:uppercase;letter-spacing:.12em;margin-bottom:8px;font-weight:800}
-    .admin-input,.admin-select{width:100%;border-radius:14px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.06);color:#fff;padding:14px 14px;font-size:15px}
-    .admin-select option{color:#000}
-    .admin-row{display:flex;gap:12px;flex-wrap:wrap;margin-top:14px}
-    .admin-btn{border:0;border-radius:14px;padding:14px 18px;background:var(--red);color:#fff;font-weight:800;cursor:pointer}
-    .admin-btn.secondary{background:rgba(255,255,255,0.10)}
-    .admin-msg{margin-top:12px;min-height:22px;color:#ffb7b7}
-    .admin-actions{display:flex;gap:8px;flex-wrap:wrap}
-    .status-badge{display:inline-flex;padding:8px 12px;border-radius:999px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.10);font-weight:700;font-size:12px}
-    .admin-hint{color:var(--muted);font-size:14px;line-height:1.6;margin-top:10px}
-    .small-link{font-size:13px;color:#ffb7b7;text-decoration:underline;cursor:pointer;background:none;border:none;padding:0}
-    @media (max-width:780px){.admin-grid{grid-template-columns:1fr}.section-head.matches-head{align-items:flex-start}}
+.matches-wrap{overflow-x:auto}
+.matches-table{width:100%;border-collapse:collapse;min-width:760px;background:rgba(255,255,255,0.03);border-radius:18px;overflow:hidden}
+.matches-table th,.matches-table td{padding:14px 12px;border-bottom:1px solid rgba(255,255,255,0.08);text-align:left}
+.matches-table th{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:#ffb7b7}
+.matches-table td{color:#f5f5f5}
+.matches-table tr:last-child td{border-bottom:none}
+.matches-empty,.matches-error{text-align:center;color:var(--muted)!important;padding:20px!important}
+.status-pill{display:inline-flex;align-items:center;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.08em}
+.status-finished{background:rgba(229,43,43,0.16);border-color:rgba(229,43,43,0.28);color:#ffe1e1}
+.admin-toolbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.admin-trigger,.admin-close,.admin-submit,.admin-secondary,.admin-logout,.table-btn{border:none;cursor:pointer;border-radius:12px;font-weight:800}
+.admin-trigger,.admin-submit,.admin-close,.admin-logout{padding:12px 16px;background:#ff2a2a;color:#fff;box-shadow:0 4px 0 #7a0000}
+.admin-secondary{padding:12px 16px;background:rgba(255,255,255,0.08);color:#fff;border:1px solid rgba(255,255,255,0.1)}
+.table-btn{padding:8px 10px;background:rgba(255,255,255,0.08);color:#fff;border:1px solid rgba(255,255,255,0.12);margin-right:8px}
+.table-btn:hover,.admin-secondary:hover{background:rgba(255,255,255,0.14)}
+.admin-trigger:hover,.admin-submit:hover,.admin-close:hover,.admin-logout:hover{transform:translateY(-2px)}
+.admin-inline-msg{color:var(--muted);font-size:14px}
+.admin-sheet{display:none;margin-top:16px;padding:18px;border-radius:22px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1)}
+.admin-sheet.active{display:block}
+.admin-login{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.admin-login input,.admin-form input,.admin-form select{width:100%;padding:13px 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.12);background:rgba(0,0,0,0.28);color:#fff;outline:none}
+.admin-login input{max-width:280px}
+.admin-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.admin-form .full{grid-column:1/-1}
+.form-note{color:var(--muted);font-size:13px}
+.hidden-actions{display:none}
+.admin-mode .hidden-actions{display:table-cell}
+.admin-mode .matches-empty-actions{display:block}
+#adminStatus{margin-top:12px;color:var(--muted);font-size:14px}
+#matchesTopMsg{color:var(--muted);font-size:14px}
+@media (max-width:760px){.admin-form{grid-template-columns:1fr}.matches-table{min-width:680px}.admin-login input{max-width:none}}
 
 </style>
 </head>
@@ -622,110 +629,112 @@ html{scroll-behavior:smooth;}
         </div>
       </div>
     </section>
+    
+<section class="section" id="matches">
+  <div class="section-head">
+    <div>
+      <h2 class="section-title">Матчи</h2>
+      <p class="section-text">Здесь показываются ближайшие и сыгранные матчи команды. После входа в админку ты можешь добавлять, редактировать и удалять матчи прямо на этой странице.</p>
+    </div>
+    <div class="admin-toolbar">
+      <button class="admin-trigger" id="openAdminBtn" type="button">Админ</button>
+      <span id="matchesTopMsg"></span>
+    </div>
+  </div>
 
-    <section class="section" id="matches">
-      <div class="section-head matches-head">
-        <div>
-          <h2 class="section-title">Матчи</h2>
-          <p class="section-text">Здесь показываются ближайшие игры и результаты. Обновляется из Firebase, так что новые матчи появляются у всех посетителей сайта.</p>
-        </div>
-        <button class="admin-toggle" id="adminToggle" type="button">Админ</button>
+  <div id="adminSheet" class="admin-sheet">
+    <div id="adminLoginBox">
+      <div class="admin-login">
+        <input id="adminPassword" type="password" placeholder="Пароль админа" />
+        <button class="admin-submit" id="loginBtn" type="button">Войти</button>
+        <button class="admin-close" id="closeAdminBtn" type="button">Закрыть</button>
+      </div>
+      <div id="loginMsg" class="form-note"></div>
+    </div>
+
+    <div id="adminContent" style="display:none;">
+      <div class="admin-toolbar" style="margin-bottom:14px;">
+        <button class="admin-logout" id="logoutBtn" type="button">Выйти</button>
+        <button class="admin-secondary" id="cancelEditBtn" type="button">Сбросить форму</button>
+        <span class="admin-inline-msg">После входа кнопки редактирования и удаления появятся прямо в таблице матчей.</span>
       </div>
 
-      <div class="matches-table-wrap">
-        <table class="matches-table">
-          <thead>
-            <tr>
-              <th>Дата</th>
-              <th>Время</th>
-              <th>Соперник</th>
-              <th>Турнир</th>
-              <th>Место</th>
-              <th>Статус</th>
-              <th>Счёт</th>
-            </tr>
-          </thead>
-          <tbody id="matchesBody">
-            <tr><td colspan="7" class="matches-empty">Загрузка матчей...</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="admin-msg" id="matchesMsg"></div>
-
-      <div class="admin-panel" id="adminPanel">
-        <div id="loginBox">
-          <label class="admin-label" for="adminPassword">Пароль администратора</label>
-          <input class="admin-input" id="adminPassword" type="password" placeholder="Введи пароль" />
-          <div class="admin-row">
-            <button class="admin-btn" id="loginBtn" type="button">Войти</button>
-            <button class="admin-btn secondary" id="closeAdminBtn" type="button">Закрыть</button>
-          </div>
-          <div class="admin-msg" id="loginMsg"></div>
+      <form id="matchForm" class="admin-form">
+        <input id="opponent" class="full" type="text" placeholder="Соперник" required />
+        <input id="date" type="date" required />
+        <input id="time" type="time" />
+        <input id="tournament" type="text" placeholder="Турнир" />
+        <select id="place">
+          <option value="">Место</option>
+          <option value="Дома">Дома</option>
+          <option value="В гостях">В гостях</option>
+        </select>
+        <select id="status">
+          <option value="soon">Скоро</option>
+          <option value="finished">Сыгран</option>
+        </select>
+        <input id="score" class="full" type="text" placeholder="Счёт, например 2:1" />
+        <div class="full admin-toolbar">
+          <button class="admin-submit" id="saveBtn" type="submit">Сохранить матч</button>
+          <span class="form-note">Минимум нужно заполнить соперника и дату.</span>
         </div>
+      </form>
+      <div id="adminStatus"></div>
+    </div>
+  </div>
 
-        <div id="adminContent" style="display:none;">
-          <p class="admin-hint">Добавляй, редактируй и удаляй матчи прямо здесь. После сохранения обновится только основная таблица выше, а данные останутся после перезагрузки страницы на этом устройстве.</p>
-          <div class="admin-grid">
-            <div>
-              <label class="admin-label" for="opponent">Соперник</label>
-              <input class="admin-input" id="opponent" type="text" placeholder="Например, Спартак" />
-            </div>
-            <div>
-              <label class="admin-label" for="date">Дата</label>
-              <input class="admin-input" id="date" type="date" />
-            </div>
-            <div>
-              <label class="admin-label" for="time">Время</label>
-              <input class="admin-input" id="time" type="text" placeholder="19:30" />
-            </div>
-            <div>
-              <label class="admin-label" for="tournament">Турнир</label>
-              <input class="admin-input" id="tournament" type="text" placeholder="Лига / Кубок" />
-            </div>
-            <div>
-              <label class="admin-label" for="place">Место</label>
-              <input class="admin-input" id="place" type="text" placeholder="Дома / В гостях / Стадион" />
-            </div>
-            <div>
-              <label class="admin-label" for="status">Статус</label>
-              <select class="admin-select" id="status">
-                <option value="soon">Скоро</option>
-                <option value="finished">Сыгран</option>
-              </select>
-            </div>
-            <div class="full">
-              <label class="admin-label" for="score">Счёт</label>
-              <input class="admin-input" id="score" type="text" placeholder="Например, 2:1" />
-            </div>
-          </div>
-          <div class="admin-row">
-            <button class="admin-btn" id="saveBtn" type="button">Сохранить матч</button>
-            <button class="admin-btn secondary" id="resetBtn" type="button">Очистить</button>
-            <button class="admin-btn secondary" id="logoutBtn" type="button">Выйти</button>
-          </div>
-          <div class="admin-msg" id="adminMsg"></div>
+  <div class="matches-wrap">
+    <table class="matches-table">
+      <thead>
+        <tr>
+          <th>Дата</th>
+          <th>Время</th>
+          <th>Соперник</th>
+          <th>Турнир</th>
+          <th>Место</th>
+          <th>Статус</th>
+          <th>Счёт</th>
+          <th class="hidden-actions">Действия</th>
+        </tr>
+      </thead>
+      <tbody id="matchesBody">
+        <tr><td colspan="8" class="matches-empty">Загрузка матчей...</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
 
-        </div>
-      </div>
-    </section>>
 
     <div class="footer">© 2026 ФК БММ — Все права защищены</div>
   </main>
 
-<script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBTFmE6FIaaVxndwdW-Hcsq1UwsRIu6CPw",
+  authDomain: "fcbmm-416e6.firebaseapp.com",
+  projectId: "fcbmm-416e6",
+  storageBucket: "fcbmm-416e6.firebasestorage.app",
+  messagingSenderId: "22315617190",
+  appId: "1:22315617190:web:3a670f18bbf115c9bb9d67"
+};
+
 const ADMIN_PASSWORD = "BMM2026";
-const ADMIN_SESSION_KEY = "fcbmm_admin_open";
-const MATCHES_STORAGE_KEY = "fcbmm_matches_storage_v2";
+const ADMIN_SESSION_KEY = "fcbmm_admin_session";
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 const matchesBody = document.getElementById('matchesBody');
-const matchesMsg = document.getElementById('matchesMsg');
-const adminMsg = document.getElementById('adminMsg');
-const loginMsg = document.getElementById('loginMsg');
-const adminPanel = document.getElementById('adminPanel');
+const matchesTopMsg = document.getElementById('matchesTopMsg');
+const adminSheet = document.getElementById('adminSheet');
+const adminLoginBox = document.getElementById('adminLoginBox');
 const adminContent = document.getElementById('adminContent');
-const loginBox = document.getElementById('loginBox');
-const saveBtn = document.getElementById('saveBtn');
-
+const loginMsg = document.getElementById('loginMsg');
+const adminStatus = document.getElementById('adminStatus');
+const matchForm = document.getElementById('matchForm');
 const formEls = {
   opponent: document.getElementById('opponent'),
   date: document.getElementById('date'),
@@ -738,6 +747,7 @@ const formEls = {
 
 let matchesCache = [];
 let editingId = null;
+let isAdmin = sessionStorage.getItem(ADMIN_SESSION_KEY) === '1';
 
 function escapeHtml(value = '') {
   return String(value)
@@ -750,9 +760,8 @@ function escapeHtml(value = '') {
 
 function formatDate(dateStr) {
   if (!dateStr) return '—';
-  const parts = dateStr.split('-');
-  if (parts.length !== 3) return dateStr;
-  return `${parts[2]}.${parts[1]}.${parts[0]}`;
+  const [y,m,d] = dateStr.split('-');
+  return y && m && d ? `${d}.${m}.${y}` : dateStr;
 }
 
 function statusLabel(status) {
@@ -761,68 +770,58 @@ function statusLabel(status) {
 
 function sortMatches(list) {
   return [...list].sort((a, b) => {
-    const aDate = `${a.date || ''} ${a.time || ''}`.trim();
-    const bDate = `${b.date || ''} ${b.time || ''}`.trim();
-    return aDate.localeCompare(bDate);
+    const av = `${a.date || ''} ${a.time || ''}`.trim();
+    const bv = `${b.date || ''} ${b.time || ''}`.trim();
+    return av.localeCompare(bv);
   });
 }
 
-function saveMatchesToStorage() {
-  localStorage.setItem(MATCHES_STORAGE_KEY, JSON.stringify(matchesCache));
-}
-
-function loadMatchesFromStorage() {
-  try {
-    const raw = localStorage.getItem(MATCHES_STORAGE_KEY);
-    if (!raw) {
-      matchesCache = [];
-      return;
-    }
-    const parsed = JSON.parse(raw);
-    matchesCache = Array.isArray(parsed) ? parsed : [];
-  } catch (error) {
-    console.error(error);
-    matchesCache = [];
-    matchesMsg.textContent = 'Не удалось прочитать сохранённые матчи.';
-  }
-}
-
-function renderMainMatches(list) {
-  if (!list.length) {
-    matchesBody.innerHTML = '<tr><td colspan="7" class="matches-empty">Пока матчей нет.</td></tr>';
+function renderMatches() {
+  const sorted = sortMatches(matchesCache);
+  if (!sorted.length) {
+    matchesBody.innerHTML = `<tr><td colspan="${isAdmin ? 8 : 7}" class="matches-empty">Пока матчей нет.</td></tr>`;
     return;
   }
-  matchesBody.innerHTML = list.map((m) => `
+
+  matchesBody.innerHTML = sorted.map((m) => `
     <tr>
       <td>${escapeHtml(formatDate(m.date))}</td>
       <td>${escapeHtml(m.time || '—')}</td>
       <td>${escapeHtml(m.opponent || '—')}</td>
       <td>${escapeHtml(m.tournament || '—')}</td>
       <td>${escapeHtml(m.place || '—')}</td>
-      <td><span class="status-badge">${escapeHtml(statusLabel(m.status))}</span></td>
-      <td>${escapeHtml(m.score || (m.status === 'finished' ? '—' : 'ещё нет'))}</td>
+      <td><span class="status-pill ${m.status === 'finished' ? 'status-finished' : ''}">${escapeHtml(statusLabel(m.status))}</span></td>
+      <td>${escapeHtml(m.score || '—')}</td>
+      ${isAdmin ? `<td class="hidden-actions"><button class="table-btn" data-edit="${m.id}" type="button">Изменить</button><button class="table-btn" data-delete="${m.id}" type="button">Удалить</button></td>` : ''}
     </tr>
   `).join('');
+
+  document.body.classList.toggle('admin-mode', isAdmin);
 }
 
-function refreshMainTable() {
-  renderMainMatches(sortMatches(matchesCache));
+function updateAdminView() {
+  document.body.classList.toggle('admin-mode', isAdmin);
+  adminLoginBox.style.display = isAdmin ? 'none' : 'block';
+  adminContent.style.display = isAdmin ? 'block' : 'none';
+  matchesTopMsg.textContent = isAdmin ? 'Админ режим включён' : '';
+  renderMatches();
 }
 
 function resetForm() {
-  Object.values(formEls).forEach((el) => {
-    if (el.tagName === 'SELECT') {
-      el.value = 'soon';
-    } else {
-      el.value = '';
-    }
-  });
   editingId = null;
-  adminMsg.textContent = '';
-  saveBtn.textContent = 'Сохранить матч';
+  formEls.opponent.value = '';
+  formEls.date.value = '';
+  formEls.time.value = '';
+  formEls.tournament.value = '';
+  formEls.place.value = '';
+  formEls.status.value = 'soon';
+  formEls.score.value = '';
+  document.getElementById('saveBtn').textContent = 'Сохранить матч';
+  adminStatus.textContent = '';
 }
 
 function fillForm(match) {
+  editingId = match.id;
   formEls.opponent.value = match.opponent || '';
   formEls.date.value = match.date || '';
   formEls.time.value = match.time || '';
@@ -830,143 +829,121 @@ function fillForm(match) {
   formEls.place.value = match.place || '';
   formEls.status.value = match.status || 'soon';
   formEls.score.value = match.score || '';
-  editingId = match.id;
-  adminMsg.textContent = 'Режим редактирования матча.';
-  saveBtn.textContent = 'Сохранить изменения';
-  adminPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  document.getElementById('saveBtn').textContent = 'Сохранить изменения';
+  adminStatus.textContent = 'Редактирование матча включено.';
+  adminSheet.scrollIntoView({behavior:'smooth', block:'start'});
 }
 
-function setAdminState(open) {
-  if (open) {
-    adminPanel.classList.add('active');
-    loginBox.style.display = 'none';
-    adminContent.style.display = 'block';
-    sessionStorage.setItem(ADMIN_SESSION_KEY, '1');
+async function loadMatches() {
+  try {
+    const snap = await getDocs(collection(db, 'matches'));
+    matchesCache = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderMatches();
+  } catch (error) {
+    console.error(error);
+    matchesBody.innerHTML = `<tr><td colspan="8" class="matches-error">Не удалось загрузить матчи: ${escapeHtml(error.message)}</td></tr>`;
+  }
+}
+
+async function saveMatch(data) {
+  if (editingId) {
+    await updateDoc(doc(db, 'matches', editingId), data);
   } else {
-    adminPanel.classList.remove('active');
-    loginBox.style.display = 'block';
-    adminContent.style.display = 'none';
-    document.getElementById('adminPassword').value = '';
-    loginMsg.textContent = '';
-    sessionStorage.removeItem(ADMIN_SESSION_KEY);
-    resetForm();
+    await addDoc(collection(db, 'matches'), data);
   }
 }
 
-function handleMainTableActions(event) {
-  const editId = event.target.getAttribute('data-edit');
-  const deleteId = event.target.getAttribute('data-delete');
-  if (editId) {
-    const match = matchesCache.find((m) => m.id === editId);
-    if (match) {
-      fillForm(match);
-      adminPanel.classList.add('active');
-      setAdminState(true);
-    }
-    return;
-  }
-  if (deleteId) {
-    if (!confirm('Удалить матч?')) return;
-    matchesCache = matchesCache.filter((m) => m.id !== deleteId);
-    saveMatchesToStorage();
-    refreshMainTable();
-    adminMsg.textContent = 'Матч удалён.';
-    if (editingId === deleteId) resetForm();
-  }
+async function removeMatch(id) {
+  await deleteDoc(doc(db, 'matches', id));
 }
 
-function renderMainMatches(list) {
-  if (!list.length) {
-    matchesBody.innerHTML = '<tr><td colspan="7" class="matches-empty">Пока матчей нет.</td></tr>';
-    return;
-  }
-  const isAdminOpen = sessionStorage.getItem(ADMIN_SESSION_KEY) === '1';
-  matchesBody.innerHTML = list.map((m) => `
-    <tr>
-      <td>${escapeHtml(formatDate(m.date))}</td>
-      <td>${escapeHtml(m.time || '—')}</td>
-      <td>${escapeHtml(m.opponent || '—')}</td>
-      <td>${escapeHtml(m.tournament || '—')}</td>
-      <td>${escapeHtml(m.place || '—')}</td>
-      <td><span class="status-badge">${escapeHtml(statusLabel(m.status))}</span></td>
-      <td>
-        ${escapeHtml(m.score || (m.status === 'finished' ? '—' : 'ещё нет'))}
-        ${isAdminOpen ? `<div class="admin-actions" style="margin-top:10px;"><button class="small-link" type="button" data-edit="${escapeHtml(m.id)}">Изменить</button><button class="small-link" type="button" data-delete="${escapeHtml(m.id)}">Удалить</button></div>` : ''}
-      </td>
-    </tr>
-  `).join('');
-}
-
-document.getElementById('adminToggle').addEventListener('click', () => {
-  adminPanel.classList.add('active');
-  if (sessionStorage.getItem(ADMIN_SESSION_KEY) === '1') {
-    setAdminState(true);
-  } else {
-    loginBox.style.display = 'block';
-    adminContent.style.display = 'none';
-  }
+document.getElementById('openAdminBtn').addEventListener('click', () => {
+  adminSheet.classList.toggle('active');
+  updateAdminView();
 });
 
 document.getElementById('closeAdminBtn').addEventListener('click', () => {
-  adminPanel.classList.remove('active');
+  adminSheet.classList.remove('active');
 });
 
 document.getElementById('loginBtn').addEventListener('click', () => {
-  const pwd = document.getElementById('adminPassword').value.trim();
-  if (pwd !== ADMIN_PASSWORD) {
+  const password = document.getElementById('adminPassword').value;
+  if (password === ADMIN_PASSWORD) {
+    isAdmin = true;
+    sessionStorage.setItem(ADMIN_SESSION_KEY, '1');
+    loginMsg.textContent = '';
+    updateAdminView();
+  } else {
     loginMsg.textContent = 'Неверный пароль.';
-    return;
   }
-  setAdminState(true);
-  refreshMainTable();
 });
 
 document.getElementById('logoutBtn').addEventListener('click', () => {
-  setAdminState(false);
-  refreshMainTable();
+  isAdmin = false;
+  sessionStorage.removeItem(ADMIN_SESSION_KEY);
+  resetForm();
+  updateAdminView();
 });
 
-document.getElementById('resetBtn').addEventListener('click', resetForm);
+document.getElementById('cancelEditBtn').addEventListener('click', resetForm);
 
-document.getElementById('saveBtn').addEventListener('click', () => {
-  adminMsg.textContent = '';
+matchForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  adminStatus.textContent = '';
   const payload = {
     opponent: formEls.opponent.value.trim(),
-    date: formEls.date.value.trim(),
-    time: formEls.time.value.trim(),
+    date: formEls.date.value,
+    time: formEls.time.value,
     tournament: formEls.tournament.value.trim(),
-    place: formEls.place.value.trim(),
+    place: formEls.place.value,
     status: formEls.status.value,
     score: formEls.score.value.trim()
   };
 
   if (!payload.opponent || !payload.date) {
-    adminMsg.textContent = 'Заполни минимум соперника и дату.';
+    adminStatus.textContent = 'Заполни соперника и дату.';
     return;
   }
 
-  if (editingId) {
-    matchesCache = matchesCache.map((m) => m.id === editingId ? { ...m, ...payload } : m);
-    adminMsg.textContent = 'Матч обновлён.';
-  } else {
-    matchesCache.push({ id: `match_${Date.now()}`, ...payload });
-    adminMsg.textContent = 'Матч сохранён.';
+  try {
+    await saveMatch(payload);
+    adminStatus.textContent = editingId ? 'Матч обновлён.' : 'Матч добавлен.';
+    resetForm();
+    await loadMatches();
+  } catch (error) {
+    console.error(error);
+    adminStatus.textContent = `Ошибка сохранения: ${error.message}`;
   }
-
-  saveMatchesToStorage();
-  resetForm();
-  refreshMainTable();
 });
 
-matchesBody.addEventListener('click', handleMainTableActions);
+matchesBody.addEventListener('click', async (e) => {
+  const editId = e.target.getAttribute('data-edit');
+  const deleteId = e.target.getAttribute('data-delete');
+  if (editId) {
+    const match = matchesCache.find(item => item.id === editId);
+    if (match) {
+      adminSheet.classList.add('active');
+      if (!isAdmin) return;
+      fillForm(match);
+      updateAdminView();
+    }
+  }
+  if (deleteId) {
+    if (!isAdmin) return;
+    if (!confirm('Удалить матч?')) return;
+    try {
+      await removeMatch(deleteId);
+      adminStatus.textContent = 'Матч удалён.';
+      await loadMatches();
+    } catch (error) {
+      console.error(error);
+      adminStatus.textContent = `Ошибка удаления: ${error.message}`;
+    }
+  }
+});
 
-if (sessionStorage.getItem(ADMIN_SESSION_KEY) === '1') {
-  adminPanel.classList.add('active');
-  setAdminState(true);
-}
-
-loadMatchesFromStorage();
-refreshMainTable();
+updateAdminView();
+loadMatches();
 </script>
 
 </body>
