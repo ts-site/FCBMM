@@ -38,15 +38,22 @@ body::before{content:"";position:fixed;inset:0;background:linear-gradient(rgba(2
 .result-win{background:rgba(53,178,107,0.18);border-color:rgba(53,178,107,0.35);color:#d8ffe8}
 .result-lose{background:rgba(229,43,43,0.18);border-color:rgba(229,43,43,0.35);color:#ffdcdc}
 .result-draw{background:rgba(255,193,7,0.16);border-color:rgba(255,193,7,0.30);color:#fff1c2}
+.admin-toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.admin-trigger,.admin-submit,.admin-close,.admin-logout,.admin-secondary,.table-btn{height:44px;padding:0 16px;border:none;border-radius:12px;font-weight:800;cursor:pointer}.admin-trigger,.admin-submit{background:#ff2a2a;color:#fff;box-shadow:0 4px 0 #7a0000}.admin-close,.admin-logout,.admin-secondary,.table-btn{background:rgba(255,255,255,0.08);color:#fff;border:1px solid rgba(255,255,255,0.10)}
+.admin-sheet{display:none;margin-top:18px;padding:18px;border-radius:24px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.10)}.admin-sheet.active{display:block}
+.admin-login,.admin-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.admin-login input,.admin-form input,.admin-form select{width:100%;padding:13px 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.12);background:rgba(0,0,0,0.28);color:#fff;outline:none}.admin-form .full{grid-column:1/-1}.admin-note,.admin-status{font-size:14px;color:var(--muted);margin-top:12px;white-space:pre-wrap}.admin-status.error{color:#ffb3b3}.admin-status.ok{color:#b8ffd1}
+.hidden-actions{display:none}body.admin-mode .hidden-actions{display:table-cell}
+.player-admin-list{display:flex;flex-direction:column;gap:10px}
+.player-admin-item{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:12px 14px;border-radius:14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.10)}
+.player-admin-meta{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.player-admin-num{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;background:#fff;color:#000;font-weight:900}
+.player-admin-name{font-weight:800}
+.player-admin-role{color:var(--muted);font-size:13px}
+.players-head-tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .goals-container{display:flex;flex-direction:column;gap:10px}
 .goal-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center}
 .goal-row select{width:100%;padding:13px 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.12);background:rgba(0,0,0,0.28);color:#fff;outline:none}
 .goal-remove{height:44px;padding:0 14px;border:none;border-radius:12px;font-weight:800;cursor:pointer;background:rgba(255,255,255,0.08);color:#fff;border:1px solid rgba(255,255,255,0.10)}
 
-.admin-toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.admin-trigger,.admin-submit,.admin-close,.admin-logout,.admin-secondary,.table-btn{height:44px;padding:0 16px;border:none;border-radius:12px;font-weight:800;cursor:pointer}.admin-trigger,.admin-submit{background:#ff2a2a;color:#fff;box-shadow:0 4px 0 #7a0000}.admin-close,.admin-logout,.admin-secondary,.table-btn{background:rgba(255,255,255,0.08);color:#fff;border:1px solid rgba(255,255,255,0.10)}
-.admin-sheet{display:none;margin-top:18px;padding:18px;border-radius:24px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.10)}.admin-sheet.active{display:block}
-.admin-login,.admin-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.admin-login input,.admin-form input,.admin-form select{width:100%;padding:13px 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.12);background:rgba(0,0,0,0.28);color:#fff;outline:none}.admin-form .full{grid-column:1/-1}.admin-note,.admin-status{font-size:14px;color:var(--muted);margin-top:12px;white-space:pre-wrap}.admin-status.error{color:#ffb3b3}.admin-status.ok{color:#b8ffd1}
-.hidden-actions{display:none}body.admin-mode .hidden-actions{display:table-cell}
 @media (max-width:980px){.hero-grid,.field-layout{grid-template-columns:1fr}.hero-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.logo-wrap{max-width:380px;margin:0 auto}}
 @media (max-width:760px){.admin-login,.admin-form{grid-template-columns:1fr}.matches-table{min-width:680px}}
 @media (max-width:620px){.container{width:min(100% - 16px,1200px)}.hero,.section{padding:20px;border-radius:22px}.hero-stats{grid-template-columns:1fr}.player-name{font-size:20px}}
@@ -76,7 +83,7 @@ body::before{content:"";position:fixed;inset:0;background:linear-gradient(rgba(2
     </section>
 
     <section class="section" id="players">
-      <div class="section-head"><div><h2 class="section-title">Состав</h2><p class="section-text">Основной состав команды ФК БММ на сезон 2026.</p></div></div>
+      <div class="section-head"><div><h2 class="section-title">Состав</h2><p class="section-text">Основной состав команды ФК БММ на сезон 2026.</p></div><div class="players-head-tools"><span id="playersTopMsg"></span></div></div>
       <div class="players-grid">
         <div class="player-card"><div class="player-top"><div class="player-num">01</div><div class="player-badge">основа</div></div><div class="player-name">Бадалян Арман (Президент)</div><div class="player-role">ФК БММ • сезон 2026</div></div>
         <div class="player-card"><div class="player-top"><div class="player-num">02</div><div class="player-badge">основа</div></div><div class="player-name">Шуман Владимир</div><div class="player-role">ФК БММ • сезон 2026</div></div>
@@ -133,6 +140,18 @@ body::before{content:"";position:fixed;inset:0;background:linear-gradient(rgba(2
             <span class="admin-note">После входа кнопки редактирования и удаления появятся прямо в таблице матчей.</span>
           </div>
           <div id="adminStatus" class="admin-status"></div>
+          <div class="section-text" style="margin-top:10px;">Управление составом</div>
+          <div id="playerForm" class="admin-form" style="margin-top:12px;">
+            <input id="playerNumber" type="number" placeholder="Номер игрока" />
+            <input id="playerName" type="text" placeholder="Имя игрока" />
+            <input id="playerRole" class="full" type="text" placeholder="Роль / подпись (например ФК БММ • сезон 2026)" />
+            <div class="full admin-toolbar">
+              <button class="admin-submit" id="savePlayerBtn" type="button">Сохранить игрока</button>
+              <button class="admin-secondary" id="resetPlayerBtn" type="button">Сбросить игрока</button>
+            </div>
+          </div>
+          <div id="playerAdminList" style="margin-top:14px;"></div>
+
           <div id="matchForm" class="admin-form" style="margin-top:12px;">
             <input id="opponent" class="full" type="text" placeholder="Соперник" />
             <input id="date" type="date" />
@@ -214,6 +233,7 @@ const ADMIN_SESSION_KEY = "fcbmm_admin_session";
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const matchesRef = collection(db, 'matches');
+const playersRef = collection(db, 'players');
 
 const matchesBody = document.getElementById('matchesBody');
 const matchesTopMsg = document.getElementById('matchesTopMsg');
@@ -225,6 +245,17 @@ const adminStatus = document.getElementById('adminStatus');
 const saveBtn = document.getElementById('saveBtn');
 const goalsContainer = document.getElementById('goalsContainer');
 const addGoalBtn = document.getElementById('addGoalBtn');
+const playersGrid = document.querySelector('.players-grid');
+const playersTopMsg = document.getElementById('playersTopMsg');
+const savePlayerBtn = document.getElementById('savePlayerBtn');
+const resetPlayerBtn = document.getElementById('resetPlayerBtn');
+const playerAdminList = document.getElementById('playerAdminList');
+
+const playerFormEls = {
+  number: document.getElementById('playerNumber'),
+  name: document.getElementById('playerName'),
+  role: document.getElementById('playerRole')
+};
 
 const formEls = {
   opponent: document.getElementById('opponent'),
@@ -238,8 +269,11 @@ const formEls = {
 };
 
 let matchesCache = [];
+let playersCache = [];
+let editingPlayerId = null;
 let editingId = null;
 let isAdmin = sessionStorage.getItem(ADMIN_SESSION_KEY) === '1';
+if (playerFormEls.role) playerFormEls.role.value = 'ФК БММ • сезон 2026';
 
 function escapeHtml(value = '') {
   return String(value)
@@ -265,7 +299,6 @@ function statusLabel(status) {
   return status === 'finished' ? 'Сыгран' : 'Скоро';
 }
 
-
 function resultLabel(result) {
   if (result === 'win') return 'Выиграли';
   if (result === 'lose') return 'Проиграли';
@@ -278,50 +311,6 @@ function resultClass(result) {
   if (result === 'lose') return 'result-lose';
   if (result === 'draw') return 'result-draw';
   return '';
-}
-
-function playerNames() {
-  return Array.from(document.querySelectorAll('.player-name')).map(el => el.textContent.trim()).filter(Boolean);
-}
-
-function createGoalRow(selected = '') {
-  const row = document.createElement('div');
-  row.className = 'goal-row';
-  const names = playerNames();
-  row.innerHTML = `
-    <select>
-      <option value="">Выбери игрока</option>
-      ${names.map(name => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join('')}
-    </select>
-    <button class="goal-remove" type="button">✕</button>
-  `;
-  const select = row.querySelector('select');
-  if (selected) select.value = selected;
-  row.querySelector('.goal-remove').addEventListener('click', () => row.remove());
-  return row;
-}
-
-function renderGoalsInputs(selected = []) {
-  if (!goalsContainer) return;
-  goalsContainer.innerHTML = '';
-  const values = Array.isArray(selected) ? selected : [];
-  if (!values.length) {
-    goalsContainer.appendChild(createGoalRow(''));
-  } else {
-    values.forEach(name => goalsContainer.appendChild(createGoalRow(name)));
-  }
-}
-
-function getSelectedGoals() {
-  if (!goalsContainer) return [];
-  return Array.from(goalsContainer.querySelectorAll('select')).map(s => s.value).filter(Boolean);
-}
-
-function formatScorers(list) {
-  if (!Array.isArray(list) || !list.length) return '—';
-  const counts = {};
-  list.forEach(name => counts[name] = (counts[name] || 0) + 1);
-  return Object.entries(counts).map(([name, count]) => `${name}${count > 1 ? ` (${count})` : ''}`).join(', ');
 }
 
 function sortMatches(list) {
@@ -337,7 +326,7 @@ function renderMatches() {
   document.body.classList.toggle('admin-mode', isAdmin);
 
   if (!sorted.length) {
-    matchesBody.innerHTML = `<tr><td colspan="${isAdmin ? 10 : 9}" class="matches-empty">Пока матчей нет.</td></tr>`;
+    matchesBody.innerHTML = `<tr><td colspan="${isAdmin ? 8 : 7}" class="matches-empty">Пока матчей нет.</td></tr>`;
     return;
   }
 
@@ -355,6 +344,191 @@ function renderMatches() {
       ${isAdmin ? `<td class="hidden-actions"><button class="table-btn" data-edit="${m.id}" type="button">Изменить</button><button class="table-btn" data-delete="${m.id}" type="button">Удалить</button></td>` : ''}
     </tr>
   `).join('');
+}
+
+
+function parseInitialPlayers() {
+  return Array.from(document.querySelectorAll('.players-grid .player-card')).map((card, index) => ({
+    id: `initial-${index + 1}`,
+    number: Number(card.querySelector('.player-num')?.textContent?.trim() || index + 1),
+    name: card.querySelector('.player-name')?.textContent?.trim() || '',
+    role: card.querySelector('.player-role')?.textContent?.trim() || 'ФК БММ • сезон 2026'
+  }));
+}
+
+function sortPlayers(list) {
+  return [...list].sort((a, b) => Number(a.number || 0) - Number(b.number || 0));
+}
+
+function renderPlayers() {
+  const list = sortPlayers(playersCache);
+  if (playersGrid) {
+    playersGrid.innerHTML = list.map((p) => `
+      <div class="player-card">
+        <div class="player-top">
+          <div class="player-num">${escapeHtml(String(p.number || '—'))}</div>
+          <div class="player-badge">основа</div>
+        </div>
+        <div class="player-name">${escapeHtml(p.name || '—')}</div>
+        <div class="player-role">${escapeHtml(p.role || 'ФК БММ • сезон 2026')}</div>
+      </div>
+    `).join('');
+  }
+
+  const heroStat = document.querySelector('.hero-stats .stat strong');
+  if (heroStat) heroStat.textContent = String(list.length);
+  if (playersTopMsg) playersTopMsg.textContent = `Игроков: ${list.length}`;
+
+  if (playerAdminList) {
+    if (!list.length) {
+      playerAdminList.innerHTML = '<div class="admin-note">Состав пуст.</div>';
+    } else {
+      playerAdminList.innerHTML = `<div class="player-admin-list">${list.map((p) => `
+        <div class="player-admin-item">
+          <div class="player-admin-meta">
+            <div class="player-admin-num">${escapeHtml(String(p.number || '—'))}</div>
+            <div>
+              <div class="player-admin-name">${escapeHtml(p.name || '—')}</div>
+              <div class="player-admin-role">${escapeHtml(p.role || '')}</div>
+            </div>
+          </div>
+          <div class="admin-toolbar">
+            <button class="table-btn" type="button" data-player-edit="${escapeHtml(p.id)}">Изменить</button>
+            <button class="table-btn" type="button" data-player-delete="${escapeHtml(p.id)}">Удалить</button>
+          </div>
+        </div>
+      `).join('')}</div>`;
+    }
+  }
+
+  renderGoalsInputs(getSelectedGoals());
+}
+
+function resetPlayerForm() {
+  editingPlayerId = null;
+  playerFormEls.number.value = '';
+  playerFormEls.name.value = '';
+  playerFormEls.role.value = 'ФК БММ • сезон 2026';
+  if (savePlayerBtn) savePlayerBtn.textContent = 'Сохранить игрока';
+}
+
+function fillPlayerForm(player) {
+  editingPlayerId = player.id;
+  playerFormEls.number.value = player.number ?? '';
+  playerFormEls.name.value = player.name ?? '';
+  playerFormEls.role.value = player.role ?? 'ФК БММ • сезон 2026';
+  if (savePlayerBtn) savePlayerBtn.textContent = 'Сохранить изменения игрока';
+}
+
+function createGoalRow(selected = '') {
+  const row = document.createElement('div');
+  row.className = 'goal-row';
+  const names = sortPlayers(playersCache).map((p) => p.name).filter(Boolean);
+  row.innerHTML = `
+    <select>
+      <option value="">Выбери игрока</option>
+      ${names.map((name) => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join('')}
+    </select>
+    <button class="goal-remove" type="button">✕</button>
+  `;
+  const select = row.querySelector('select');
+  if (selected) select.value = selected;
+  row.querySelector('.goal-remove').addEventListener('click', () => row.remove());
+  return row;
+}
+
+function renderGoalsInputs(selected = []) {
+  if (!goalsContainer) return;
+  goalsContainer.innerHTML = '';
+  const values = Array.isArray(selected) ? selected : [];
+  if (!values.length) {
+    goalsContainer.appendChild(createGoalRow(''));
+    return;
+  }
+  values.forEach((name) => goalsContainer.appendChild(createGoalRow(name)));
+}
+
+function getSelectedGoals() {
+  if (!goalsContainer) return [];
+  return Array.from(goalsContainer.querySelectorAll('select')).map((s) => s.value).filter(Boolean);
+}
+
+function formatScorers(list) {
+  if (!Array.isArray(list) || !list.length) return '—';
+  const counts = {};
+  list.forEach((name) => counts[name] = (counts[name] || 0) + 1);
+  return Object.entries(counts).map(([name, count]) => `${name}${count > 1 ? ` (${count})` : ''}`).join(', ');
+}
+
+function subscribePlayers() {
+  onSnapshot(playersRef, async (snap) => {
+    if (snap.empty) {
+      const initialPlayers = parseInitialPlayers();
+      playersCache = initialPlayers;
+      renderPlayers();
+      try {
+        for (const p of initialPlayers) {
+          await addDoc(playersRef, { number: p.number, name: p.name, role: p.role });
+        }
+      } catch (e) {
+        console.error(e);
+      }
+      return;
+    }
+    playersCache = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+    renderPlayers();
+  }, (error) => {
+    console.error(error);
+    if (playerAdminList) playerAdminList.innerHTML = `<div class="admin-status error">Ошибка загрузки состава: ${escapeHtml(error.message)}</div>`;
+  });
+}
+
+async function savePlayer() {
+  if (!isAdmin) {
+    setStatus('Сначала войди в админку.', 'error');
+    return;
+  }
+  const payload = {
+    number: Number(playerFormEls.number.value || 0),
+    name: playerFormEls.name.value.trim(),
+    role: playerFormEls.role.value.trim() || 'ФК БММ • сезон 2026'
+  };
+  if (!payload.number || !payload.name) {
+    setStatus('Для игрока заполни номер и имя.', 'error');
+    return;
+  }
+  try {
+    savePlayerBtn.disabled = true
+  } catch(e) {}
+  try {
+    if (editingPlayerId && !String(editingPlayerId).startsWith('initial-')) {
+      await updateDoc(doc(db, 'players', editingPlayerId), payload);
+      setStatus('Игрок обновлён.', 'ok');
+    } else {
+      await addDoc(playersRef, payload);
+      setStatus('Игрок добавлен.', 'ok');
+    }
+    resetPlayerForm();
+  } catch (error) {
+    console.error(error);
+    setStatus(`Ошибка игрока: ${error.message}`, 'error');
+  } finally {
+    if (savePlayerBtn) savePlayerBtn.disabled = false;
+  }
+}
+
+async function removePlayer(id) {
+  try {
+    if (String(id).startsWith('initial-')) {
+      setStatus('Этот игрок ещё не синхронизирован. Обнови страницу.', 'error');
+      return;
+    }
+    await deleteDoc(doc(db, 'players', id));
+    setStatus('Игрок удалён.', 'ok');
+  } catch (error) {
+    console.error(error);
+    setStatus(`Ошибка удаления игрока: ${error.message}`, 'error');
+  }
 }
 
 function updateAdminView() {
@@ -495,11 +669,36 @@ document.getElementById('logoutBtn').addEventListener('click', () => {
 
 document.getElementById('cancelEditBtn').addEventListener('click', () => {
   resetForm();
-  setStatus('Форма очищена.', 'ok');
+  resetPlayerForm();
+  setStatus('Формы очищены.', 'ok');
 });
 
 saveBtn.addEventListener('click', saveMatch);
+if (savePlayerBtn) savePlayerBtn.addEventListener('click', savePlayer);
 if (addGoalBtn) addGoalBtn.addEventListener('click', () => goalsContainer.appendChild(createGoalRow('')));
+if (resetPlayerBtn) resetPlayerBtn.addEventListener('click', () => {
+  resetPlayerForm();
+  setStatus('Форма игрока очищена.', 'ok');
+});
+
+playerAdminList.addEventListener('click', async (e) => {
+  const editId = e.target.getAttribute('data-player-edit');
+  const deleteId = e.target.getAttribute('data-player-delete');
+
+  if (editId) {
+    const player = playersCache.find((item) => String(item.id) === String(editId));
+    if (player) {
+      fillPlayerForm(player);
+      adminSheet.classList.add('active');
+      updateAdminView();
+    }
+  }
+
+  if (deleteId) {
+    if (!confirm('Удалить игрока?')) return;
+    await removePlayer(deleteId);
+  }
+});
 
 matchesBody.addEventListener('click', async (e) => {
   const editId = e.target.getAttribute('data-edit');
@@ -522,8 +721,10 @@ matchesBody.addEventListener('click', async (e) => {
   }
 });
 
+resetPlayerForm();
 renderGoalsInputs([]);
 updateAdminView();
+subscribePlayers();
 subscribeMatches();
 </script>
 </body>
