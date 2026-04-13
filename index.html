@@ -358,7 +358,7 @@ function renderMatches() {
       <td><span class="status-pill ${m.status === 'finished' ? 'status-finished' : ''}">${escapeHtml(statusLabel(m.status))}</span></td>
       <td><span class="result-pill ${resultClass(m.result)}">${escapeHtml(resultLabel(m.result))}</span></td>
       <td>${escapeHtml(m.score || '—')}</td>
-      <td>${escapeHtml(m.scorer || '—')}</td>
+      <td>${escapeHtml(formatScorers(m.scorer))}</td>
       ${isAdmin ? `<td class="hidden-actions"><button class="table-btn" data-edit="${m.id}" type="button">Изменить</button><button class="table-btn" data-delete="${m.id}" type="button">Удалить</button></td>` : ''}
     </tr>
   `).join('');
@@ -419,7 +419,12 @@ function renderPlayers() {
     }
   }
 
-  populateScorerOptionsFromPlayers();
+  renderGoalsInputs(getSelectedGoals());
+}
+
+function getSelectedGoals() {
+  if (!goalsContainer) return [];
+  return Array.from(goalsContainer.querySelectorAll('select')).map(s => s.value).filter(Boolean);
 }
 
 function resetPlayerForm() {
@@ -553,9 +558,9 @@ function resetForm() {
   formEls.tournament.value = '';
   formEls.place.value = '';
   formEls.status.value = 'soon';
-  formEls.result.value = '';
+  if (formEls.result) formEls.result.value = '';
   formEls.score.value = '';
-  null.value = '';
+  renderGoalsInputs([]);
   saveBtn.textContent = 'Сохранить матч';
 }
 
@@ -567,9 +572,9 @@ function fillForm(match) {
   formEls.tournament.value = match.tournament || '';
   formEls.place.value = match.place || '';
   formEls.status.value = match.status || 'soon';
-  formEls.result.value = match.result || '';
+  if (formEls.result) formEls.result.value = match.result || '';
   formEls.score.value = match.score || '';
-  null.value = match.scorer || '';
+  renderGoalsInputs(Array.isArray(match.scorer) ? match.scorer : []);
   saveBtn.textContent = 'Сохранить изменения';
   setStatus('Редактирование матча включено.', 'ok');
   adminSheet.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -600,7 +605,7 @@ async function saveMatch() {
     status: formEls.status.value,
     result: formEls.result.value,
     score: formEls.score.value.trim(),
-    scorer: Array.from(document.querySelectorAll('#goalsContainer select')).map(s => s.value).filter(Boolean),
+    scorer: getSelectedGoals(),
     updatedAt: new Date().toISOString()
   };
 
