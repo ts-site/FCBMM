@@ -41,6 +41,10 @@ body::before{content:"";position:fixed;inset:0;background:linear-gradient(rgba(2
 .admin-toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.admin-trigger,.admin-submit,.admin-close,.admin-logout,.admin-secondary,.table-btn{height:44px;padding:0 16px;border:none;border-radius:12px;font-weight:800;cursor:pointer}.admin-trigger,.admin-submit{background:#ff2a2a;color:#fff;box-shadow:0 4px 0 #7a0000}.admin-close,.admin-logout,.admin-secondary,.table-btn{background:rgba(255,255,255,0.08);color:#fff;border:1px solid rgba(255,255,255,0.10)}
 .admin-sheet{display:none;margin-top:18px;padding:18px;border-radius:24px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.10)}.admin-sheet.active{display:block}
 .admin-login,.admin-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.admin-login input,.admin-form input,.admin-form select{width:100%;padding:13px 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.12);background:rgba(0,0,0,0.28);color:#fff;outline:none}.admin-form .full{grid-column:1/-1}.admin-note,.admin-status{font-size:14px;color:var(--muted);margin-top:12px;white-space:pre-wrap}.admin-status.error{color:#ffb3b3}.admin-status.ok{color:#b8ffd1}
+.goals-container{display:flex;flex-direction:column;gap:10px}
+.goal-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center}
+.goal-row select{width:100%;padding:13px 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.12);background:rgba(0,0,0,0.28);color:#fff;outline:none}
+.goal-remove{height:44px;padding:0 14px;border:none;border-radius:12px;font-weight:800;cursor:pointer;background:rgba(255,255,255,0.08);color:#fff;border:1px solid rgba(255,255,255,0.10)}
 .hidden-actions{display:none}body.admin-mode .hidden-actions{display:table-cell}
 .player-admin-list{display:flex;flex-direction:column;gap:10px}
 .player-admin-item{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:12px 14px;border-radius:14px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.10)}
@@ -250,6 +254,8 @@ const adminContent = document.getElementById('adminContent');
 const loginMsg = document.getElementById('loginMsg');
 const adminStatus = document.getElementById('adminStatus');
 const saveBtn = document.getElementById('saveBtn');
+const goalsContainer = document.getElementById('goalsContainer');
+const addGoalBtn = document.getElementById('addGoalBtn');
 const playersGrid = document.querySelector('.players-grid');
 const playersTopMsg = document.getElementById('playersTopMsg');
 const savePlayerBtn = document.getElementById('savePlayerBtn');
@@ -270,8 +276,7 @@ const formEls = {
   place: document.getElementById('place'),
   status: document.getElementById('status'),
   result: document.getElementById('result'),
-  score: document.getElementById('score'),
-  scorer: document.getElementById('scorer')
+  score: document.getElementById('score')
 };
 
 let matchesCache = [];
@@ -317,6 +322,13 @@ function resultClass(result) {
   if (result === 'lose') return 'result-lose';
   if (result === 'draw') return 'result-draw';
   return '';
+}
+
+function formatScorers(list) {
+  if (!Array.isArray(list) || !list.length) return '—';
+  const counts = {};
+  for (const name of list) counts[name] = (counts[name] || 0) + 1;
+  return Object.entries(counts).map(([name, count]) => `${name}${count > 1 ? ` (${count})` : ''}`).join(', ');
 }
 
 function sortMatches(list) {
@@ -426,12 +438,32 @@ function fillPlayerForm(player) {
   if (savePlayerBtn) savePlayerBtn.textContent = 'Сохранить изменения игрока';
 }
 
-function populateScorerOptionsFromPlayers() {
-  if (!formEls.scorer) return;
-  const options = ['<option value="">Кто забил</option>'].concat(
-    sortPlayers(playersCache).map((p) => `<option value="${escapeHtml(p.name)}">${escapeHtml(p.name)}</option>`)
-  );
-  formEls.scorer.innerHTML = options.join('');
+function createGoalRow(selected = '') {
+  const row = document.createElement('div');
+  row.className = 'goal-row';
+  const names = sortPlayers(playersCache).map((p) => p.name).filter(Boolean);
+  row.innerHTML = `
+    <select>
+      <option value="">Выбери игрока</option>
+      ${names.map((name) => `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`).join('')}
+    </select>
+    <button class="goal-remove" type="button">✕</button>
+  `;
+  const select = row.querySelector('select');
+  if (selected) select.value = selected;
+  row.querySelector('.goal-remove').addEventListener('click', () => row.remove());
+  return row;
+}
+
+function populateScorerOptionsFromPlayers(selected = []) {
+  if (!goalsContainer) return;
+  const current = Array.isArray(selected) ? selected : [];
+  goalsContainer.innerHTML = '';
+  if (!current.length) {
+    goalsContainer.appendChild(createGoalRow(''));
+    return;
+  }
+  current.forEach((name) => goalsContainer.appendChild(createGoalRow(name)));
 }
 
 function subscribePlayers() {
@@ -523,7 +555,7 @@ function resetForm() {
   formEls.status.value = 'soon';
   formEls.result.value = '';
   formEls.score.value = '';
-  formEls.scorer.value = '';
+  null.value = '';
   saveBtn.textContent = 'Сохранить матч';
 }
 
@@ -537,7 +569,7 @@ function fillForm(match) {
   formEls.status.value = match.status || 'soon';
   formEls.result.value = match.result || '';
   formEls.score.value = match.score || '';
-  formEls.scorer.value = match.scorer || '';
+  null.value = match.scorer || '';
   saveBtn.textContent = 'Сохранить изменения';
   setStatus('Редактирование матча включено.', 'ok');
   adminSheet.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -568,7 +600,7 @@ async function saveMatch() {
     status: formEls.status.value,
     result: formEls.result.value,
     score: formEls.score.value.trim(),
-    scorer: formEls.scorer.value,
+    scorer: Array.from(document.querySelectorAll('#goalsContainer select')).map(s => s.value).filter(Boolean),
     updatedAt: new Date().toISOString()
   };
 
@@ -649,6 +681,7 @@ document.getElementById('cancelEditBtn').addEventListener('click', () => {
 
 saveBtn.addEventListener('click', saveMatch);
 if (savePlayerBtn) savePlayerBtn.addEventListener('click', savePlayer);
+if (addGoalBtn) addGoalBtn.addEventListener('click', () => goalsContainer.appendChild(createGoalRow('')));
 if (resetPlayerBtn) resetPlayerBtn.addEventListener('click', () => {
   resetPlayerForm();
   setStatus('Форма игрока очищена.', 'ok');
@@ -695,6 +728,7 @@ matchesBody.addEventListener('click', async (e) => {
 });
 
 resetPlayerForm();
+populateScorerOptionsFromPlayers([]);
 updateAdminView();
 subscribePlayers();
 subscribeMatches();
